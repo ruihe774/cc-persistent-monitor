@@ -1,0 +1,1 @@
+{ "name": "persistent-monitor", "version": "0.1.0", "description": "Monitor tool with persistent (no deadline) watches" }

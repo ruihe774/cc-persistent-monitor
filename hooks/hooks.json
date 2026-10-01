@@ -1,0 +1,1 @@
+{ "description": "persistent monitor", "modules": ["./register.ts"] }

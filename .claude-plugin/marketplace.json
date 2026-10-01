@@ -1,0 +1,14 @@
+{
+    "name": "persistent-monitor",
+    "description": "Local marketplace for the persistent-monitor mod",
+    "owner": {
+        "name": "Rui He"
+    },
+    "plugins": [
+        {
+            "name": "persistent-monitor",
+            "source": "./",
+            "description": "Monitor tool with persistent (no deadline) watches"
+        }
+    ]
+}

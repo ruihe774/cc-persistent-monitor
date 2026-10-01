@@ -31,9 +31,9 @@ Claude sees them as `mcp__persistent-monitor__<name>`.
 
 Example prompts:
 
-- "Use persistent-monitor to watch `npm run dev` and tell me when it logs an error."
-- "Wait for PID 4242 to exit, then run the tests."
-- "Tail `build.log` and let me know when a line matches `FAILED`."
+- "Use the persistent-monitor `monitor` tool to watch `npm run dev` and tell me when it logs an error."
+- "Use the persistent-monitor `waitpid` tool to wait for PID 4242 to exit, then run the tests."
+- "Use the persistent-monitor `waitfile` tool to follow `build.log` and let me know when a line matches `FAILED`."
 
 ## Notes
 

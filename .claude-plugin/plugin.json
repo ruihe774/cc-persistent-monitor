@@ -1,1 +1,9 @@
-{ "name": "persistent-monitor", "version": "0.1.0", "description": "Monitor tool with persistent (no deadline) watches" }
+{
+    "description": "Monitor tool with persistent (no deadline) watches",
+    "name": "persistent-monitor",
+    "version": "0.1.0",
+    "author": {
+        "name": "Rui He",
+        "email": "ruihe774@outlook.com"
+    }
+}

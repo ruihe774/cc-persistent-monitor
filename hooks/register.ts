@@ -13,6 +13,12 @@ type Io = {
 const DEFAULT_TIMEOUT_MS = 300_000
 const BATCH_MS = 200
 const MAX_BATCH_CHARS = 8_000
+// Models tend to poll or block after starting a watch, which only delays delivery
+const DELIVERY_NOTE =
+  'Events arrive between turns as new messages from this plugin, never as tool results. ' +
+  'After starting a watch, continue with other work or end your turn. Do not poll for events (ReadNotifications, sleep, tail or wait loops) ' +
+  'and do not wait inside the turn: waiting does not speed delivery up and only delays it.'
+const RESULT_NOTE = 'Events arrive as messages after this turn; do not poll or wait for them, just continue or end your turn.'
 
 export function register(on: any) {
   const watches = new Map<string, Watch>()
@@ -23,7 +29,7 @@ export function register(on: any) {
       name: 'monitor',
       description:
         'Start a background monitor that streams events from a long-running shell command. Each stdout line is an event: ' +
-        'you keep working and notifications arrive as messages from this plugin. Unlike the built-in Monitor, a watch with ' +
+        'you keep working and notifications arrive as messages from this plugin. ' + DELIVERY_NOTE + ' Unlike the built-in Monitor, a watch with ' +
         '`persistent: true` has no deadline and runs until `monitor_stop` or the session ends, so you never need to re-arm it.\n\n' +
         'Pick by how many notifications you need:\n' +
         '- One ("tell me when the build finishes") -> use Bash with run_in_background and a command that exits when the condition is true.\n' +
@@ -67,7 +73,7 @@ export function register(on: any) {
       name: 'waitpid',
       description:
         'Wait for a process to exit. Returns immediately; you get one message when process `pid` ends (no deadline). ' +
-        'Use this instead of polling `ps`. Cancel with monitor_stop.',
+        'Use this instead of polling `ps`. Cancel with monitor_stop. ' + DELIVERY_NOTE,
       inputSchema: {
         type: 'object',
         properties: {
@@ -82,7 +88,7 @@ export function register(on: any) {
       name: 'waitfile',
       description:
         'Follow a file (`tail -F`) and get a message for each line appended to it, optionally only lines matching a regex. ' +
-        'The file may not exist yet. Set `once` to stop after the first (matching) line. Runs with no deadline by default; cancel with monitor_stop.',
+        'The file may not exist yet. Set `once` to stop after the first (matching) line. Runs with no deadline by default; cancel with monitor_stop. ' + DELIVERY_NOTE,
       inputSchema: {
         type: 'object',
         properties: {
@@ -207,8 +213,8 @@ export function register(on: any) {
     const id = startWatch(io, { argv: ['bash', '-c', e.command], description, persistent, timeoutMs })
     return {
       result: persistent
-        ? `Monitor ${id} started: ${description}. persistent: runs until monitor_stop or session end. Events arrive as messages.`
-        : `Monitor ${id} started: ${description}. Expires in ${Math.round(timeoutMs / 1000)}s. Events arrive as messages.`,
+        ? `Monitor ${id} started: ${description}. persistent: runs until monitor_stop or session end. ${RESULT_NOTE}`
+        : `Monitor ${id} started: ${description}. Expires in ${Math.round(timeoutMs / 1000)}s. ${RESULT_NOTE}`,
     }
   })
 
@@ -230,7 +236,7 @@ export function register(on: any) {
       timeoutMs: 0,
       endText: () => `process ${pid} has exited.`,
     })
-    return { result: `waitpid ${id} started: ${description}. You will get one message when process ${pid} exits (no deadline; monitor_stop to cancel).` }
+    return { result: `waitpid ${id} started: ${description}. You will get one message when process ${pid} exits (no deadline; monitor_stop to cancel). ${RESULT_NOTE}` }
   })
 
   on('tool.call', { tool: 'mcp__persistent-monitor__waitfile' }, async ($: any, e: any) => {
@@ -261,7 +267,7 @@ export function register(on: any) {
       once,
     })
     return {
-      result: `waitfile ${id} started: ${description}. ${once ? 'One message on the first' : 'A message for each'} ${re ? 'matching ' : ''}line appended to ${e.path}. ${e.persistent !== false ? 'No deadline' : 'Has a deadline'}; monitor_stop to cancel.`,
+      result: `waitfile ${id} started: ${description}. ${once ? 'One message on the first' : 'A message for each'} ${re ? 'matching ' : ''}line appended to ${e.path}. ${e.persistent !== false ? 'No deadline' : 'Has a deadline'}; monitor_stop to cancel. ${RESULT_NOTE}`,
     }
   })
 

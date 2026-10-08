@@ -1,5 +1,7 @@
 # persistent-monitor
 
+> **Disclaimer: we do not recommend using this plugin.** It is a third-party implementation, and it bypasses the built-in safety measures that Claude Code applies to `Bash` and `Monitor`. The `monitor` and `waitpid` tools run shell commands and stream their output to Claude without those checks, and watches have no deadline. Install and use it only if you understand and accept these risks.
+
 A Claude Code mod (requires v2.1.287+) that brings back watches with no deadline.
 
 Since 2.1.271 the built-in `Monitor` tool caps every watch at 30 minutes and forces Claude to re-arm it ([anthropics/claude-code#94553](https://github.com/anthropics/claude-code/issues/94553)). This mod adds tools that watch for as long as you need.
